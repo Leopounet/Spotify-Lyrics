@@ -22,7 +22,7 @@ class Argument:
 ################################################################################
 
 # The username of the current user
-username = "felixdcp"
+username = ""
 
 # To have the permission to get the current playing song (not the only possible
 # option, see doc for more info: https://spotipy.readthedocs.io/en/2.7.0/)
