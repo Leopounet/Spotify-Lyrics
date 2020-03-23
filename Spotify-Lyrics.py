@@ -6,6 +6,7 @@ import webbrowser
 import time
 import unidecode
 import unicodedata
+import os
 
 ################################################################################
 ############################## CLASSES #########################################
@@ -16,13 +17,12 @@ class Argument:
     def __init__(self):
         self.verbose = False
         self.passive = False
+        self.username = None
+        self.help = False
 
 ################################################################################
 ############################## VARIABLES #######################################
 ################################################################################
-
-# The username of the current user
-username = ""
 
 # To have the permission to get the current playing song (not the only possible
 # option, see doc for more info: https://spotipy.readthedocs.io/en/2.7.0/)
@@ -42,10 +42,10 @@ url = "http://10.161.174.26/"
 ccm = SpotifyClientCredentials(client_id=id, client_secret=secret)
 
 # Getting a token corresponding the user and the bot
-token = util.prompt_for_user_token(username, scope, client_id=id, client_secret=secret, redirect_uri=url)
+token = None 
 
 # The spotify object
-spotify = spotipy.Spotify(auth=token, client_credentials_manager=ccm)
+spotify = None 
 
 # Argument object
 arguments = Argument()
@@ -56,6 +56,18 @@ featToken = " (feat."
 ################################################################################
 ############################## METHODS #########################################
 ################################################################################
+
+# The help message to display if option -help is used or if the user did something wrong
+def helpMessage():
+    print("python3 Spotify-Lyrics -username [username] [options]")
+    displayOptions()
+
+def displayOptions():
+    print("List of availible options:")
+    print("     -help : Displays this help")
+    print("     -username [username] : Mandatory. Gives your username to the software")
+    print("     -p : Passive mode (loads webpages each time the song changes)")
+    print("     -v : Verbose mode")
 
 # Parse the arguments give as parameters
 def parseArgs(arguments, argv):
@@ -72,6 +84,16 @@ def parseArgs(arguments, argv):
         # If passive is set to True, new tabs will be opened each time a new song starts
         if argv[index] == '-p':
             arguments.passive = True
+
+        # This option is mandatory
+        # The option is -username, pretty self explanatory
+        if argv[index] == '-username':
+            if len(argv) > index + 1:
+                arguments.username = argv[index + 1]
+
+        # -help
+        if argv[index] == '-help':
+            displayOptions()
 
 # Returns a string corresponding to the name of the band or artist as displayed
 # on Spotify
@@ -112,8 +134,10 @@ def getCurrentTrackAsDict(spotify):
         print("         - Private Session is not enabled")
         print("         - Your username is correct")
         print("         - Spotify object has been correctly initialized")
-        print("Detailed Error: ")
-        print(e)
+        helpMessage()
+        if arguments.verbose:
+            print("Detailed Error: ")
+            print(e)
         dict = None
 
     return dict
@@ -326,6 +350,18 @@ def passiveOpenTab(spotify, arguments):
 # -p : Passive listening (see below)
 # -v : Verbose
 parseArgs(arguments, sys.argv)
+
+# If the user didn't give it's username
+if arguments.username == None:
+    print("No username given.")
+    helpMessage()
+    exit(0)
+
+# Getting a token corresponding the user and the bot
+token = util.prompt_for_user_token(arguments.username, scope, client_id=id, client_secret=secret, redirect_uri=url)
+
+# The spotify object
+spotify = spotipy.Spotify(auth=token, client_credentials_manager=ccm)
 
 # If it should open new tabs each time a new song starts
 # This is set with parameter -p
