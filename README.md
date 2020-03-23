@@ -13,7 +13,7 @@ There are 2 availible modes.
 ### For one song only
 
 ```bash
-python Spotify-Lyrics.py
+python Spotify-Lyrics.py -username [username]
 ```
 
 This will open the new tab with the lyrics of the current playing songs on Spotify and stop the software.
@@ -21,7 +21,7 @@ This will open the new tab with the lyrics of the current playing songs on Spoti
 ### Passive mode
 
 ```bash
-python Spotify-Lyrics.py -p
+python Spotify-Lyrics.py -username [username] -p
 ```
 
 This will open the new tab with the lyrics of the current playing songs on Spotify. Then it will wait until a new song starts to repeat the process.
